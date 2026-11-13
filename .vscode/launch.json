@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type":"chrome",
+            "runtimeExecutable": "/snap/bin/brave",
+            "port":9222,
+            "request":"launch",
+            "name": "BrowserSync Brave",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/src",
+            "preLaunchTask": "lanzarBrowserSync",
+            "postDebugTask": "pararBrowserSync"
+        },
+        {
+            "type":"chrome",
+            "runtimeExecutable": "/snap/bin/brave",
+            "port":9222,
+            "request":"launch",
+            "name": "BrowserSync Debug",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/",
+            "preLaunchTask": "debugBrowserSync",
+            "postDebugTask": "pararBrowserSync"
+        }
+    ]
+}
