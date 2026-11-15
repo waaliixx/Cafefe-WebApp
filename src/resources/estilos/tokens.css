@@ -1,0 +1,43 @@
+/* Variables globales: se heredan dentro del Shadow DOM de cada componente. */
+:root {
+    /* Paleta de Cafefe */
+    --cafe-paprika: #d36135;
+    --cafe-gris: #6b818c;
+    --cafe-negro: #000000;
+    --cafe-caramelo: #e6aa68;
+    --cafe-grano: #2a1a1f;
+    --cafe-crema: #fffaf4;
+    --cafe-blanco: #ffffff;
+
+    /* Semánticas */
+    --color-fondo: var(--cafe-crema);
+    --color-texto: var(--cafe-grano);
+    --color-primario: var(--cafe-paprika);
+    --color-borde: #e4d6c8;
+
+    /* Espaciado y forma */
+    --espacio-1: 0.25rem;
+    --espacio-2: 0.5rem;
+    --espacio-3: 1rem;
+    --espacio-4: 1.5rem;
+    --espacio-5: 2.5rem;
+    --radio: 0.5rem;
+
+    /* Tipografía */
+    --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --tam-base: 1rem;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    font-family: var(--fuente);
+    font-size: var(--tam-base);
+}
+
+cafe-app {
+    display: block;
+    min-height: 100vh;
+}
