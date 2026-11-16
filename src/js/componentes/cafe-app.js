@@ -10,47 +10,136 @@ import { permite } from '../control/reglas.js';
 
 export class CafeApp extends CafeElement {
     static estilos = estilos + `
-        :host {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+    :host {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
-        header {
-            padding: 1rem 1.5rem;
-            background: var(--cafe-grano);
-            color: white;
-        }
+    header {
+        background: var(--cafe-grano);
+        color: var(--cafe-crema);
+    }
 
-        header a { color: var(--cafe-crema); }
+    .barra {
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+    }
+
+    .marca {
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+        color: var(--cafe-crema);
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+
+    .logo {
+        width: 78px;
+        height: 78px;
+        object-fit: contain;
+        border-radius: .65rem;
+        background: #f4ecdf;
+    }
+
+    .titulo {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 800;
+        letter-spacing: .025em;
+        line-height: 1.1;
+    }
+
+    nav {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        text-align: right;
+    }
+
+    nav a {
+        color: var(--cafe-crema);
+        text-underline-offset: .25em;
+    }
+
+    .acceso {
+        display: grid;
+        gap: .35rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .acceso a {
+        color: var(--cafe-caramelo);
+        font-weight: 700;
+    }
+
+    #salir {
+        background: var(--cafe-crema);
+        color: var(--cafe-grano);
+    }
+
+    main {
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+        padding: 1.5rem;
+        flex: 1;
+    }
+
+    footer {
+        padding: 1rem;
+        text-align: center;
+        border-top: 1px solid var(--color-borde);
+    }
+
+    footer p {
+        margin: .4rem 0;
+    }
+
+    #conexion {
+        color: #66584d;
+        font-size: .85rem;
+    }
+
+    #instalar {
+        margin-top: .7rem;
+    }
+
+    @media (max-width: 520px) {
+        .barra {
+            padding: 1rem;
+            gap: .8rem;
+            flex-wrap: wrap;
+        }
 
         .marca {
-            font-weight: 800;
-            letter-spacing: .12em;
+            gap: .65rem;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
         }
 
         nav {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-top: 1rem;
+            margin-left: auto;
+            font-size: .9rem;
         }
 
         main {
-            width: 100%;
-            max-width: 1200px;
-            margin: auto;
-            padding: 1.5rem;
-            flex: 1;
-        }
-
-        footer {
             padding: 1rem;
-            text-align: center;
-            border-top: 1px solid var(--color-borde);
         }
-    `;
+    }
+`;
 
     _router = null;
     instalacion = null;
@@ -64,24 +153,41 @@ export class CafeApp extends CafeElement {
     }
 
     plantilla() {
-        return html`
-            <header>
-                <a class="marca" href="#/orden">CAFEFE</a>
+    return html`
+        <header>
+            <div class="barra">
+                <a
+                    class="marca"
+                    href="#/orden"
+                    aria-label="Cafefe, ir a pedidos">
 
-                <nav aria-label="Navegación principal"></nav>
+                    <img
+                        class="logo"
+                        src="resources/imagenes/logo-cafefe.jpg"
+                        alt=""
+                        width="78"
+                        height="78">
 
-                <p id="conexion" role="status"></p>
+                    <span class="titulo">Cafefe</span>
+                </a>
 
-                <button id="instalar" hidden>
-                    Instalar aplicación
-                </button>
-            </header>
+                <nav aria-label="Acceso de empleados"></nav>
+            </div>
+        </header>
 
-            <main id="salida" tabindex="-1"></main>
+        <main id="salida" tabindex="-1"></main>
 
-            <footer>Cafefe · PPI115 2026</footer>
-        `;
-    }
+        <footer>
+            <p>Cafefe · PPI115 2026</p>
+
+            <p id="conexion" role="status"></p>
+
+            <button id="instalar" hidden>
+                Instalar aplicación
+            </button>
+        </footer>
+    `;
+}
 
     alConectar() {
         this.suscribirse(
@@ -173,33 +279,48 @@ export class CafeApp extends CafeElement {
         );
     }
 
-    menu() {
-        const usuario = sesion.get('usuario');
+menu() {
+    const usuario = sesion.get('usuario');
 
-        this.$('nav').innerHTML = String(html`
-            <a href="#/orden">Ordenar</a>
+    this.$('nav').innerHTML = String(html`
+        ${usuario
+            ? html`
+                <span>${usuario.empleado.nombre}</span>
 
-            ${permite(usuario, ['barista', 'cocinero'])
-                ? html`<a href="#/recepcion">Recepción</a>`
-                : ''}
+                ${permite(usuario, ['barista', 'cocinero'])
+                    ? html`
+                        <a href="#/recepcion">Recepción</a>
+                    `
+                    : ''}
 
-            ${permite(usuario, ['cajero'])
-                ? html`<a href="#/pago">Caja</a>`
-                : ''}
+                ${permite(usuario, ['cajero'])
+                    ? html`
+                        <a href="#/pago">Caja</a>
+                    `
+                    : ''}
 
-            ${usuario
-                ? html`
-                    <span>${usuario.empleado.nombre}</span>
-                    <button id="salir">Salir</button>
-                `
-                : html`<a href="#/login">Empleados</a>`}
-        `);
+                <button id="salir" type="button">
+                    Salir
+                </button>
+            `
+            : html`
+                <p class="acceso">
+                    <span>¿Quieres iniciar sesión?</span>
 
-        this.$('#salir')?.addEventListener('click', () => {
-            iniciarSesion(null);
-            this.router.navegar('/login');
-        });
-    }
+                    <a
+                        href="#/login"
+                        aria-label="Haz click aquí para iniciar sesión">
+                        Haz click aquí
+                    </a>
+                </p>
+            `}
+    `);
+
+    this.$('#salir')?.addEventListener('click', () => {
+        iniciarSesion(null);
+        this.router.navegar('/login');
+    });
+}
 
     mostrar(detalle) {
         const etiqueta = detalle.tipo === 'ruta'
