@@ -1,4 +1,4 @@
-import { ApiClient, ApiError } from '../../src/js/api.js';
+import { ApiClient, ApiError } from '../../../src/js/control/api.js';
 
 function respuesta({ status = 200, cuerpo = null, statusText = '' } = {}) {
     return {

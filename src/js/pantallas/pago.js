@@ -1,18 +1,21 @@
 import { Pendientes } from './pendientes.js';
-import { deshabilitado } from '../base/Vista.js';
 import { html } from '../base/html.js';
-import { api, sesion, ticketUrl } from '../control/servicios.js';
+import {
+    api,
+    sesion,
+    ticketUrl
+} from '../control/servicios.js';
 import {
     dinero,
     centavos,
-    resumen,
     validarCobro,
-    normalizar,
+    normalizar
 } from '../control/reglas.js';
+
+import '../componentes/cafe-formulario-pago.js';
 
 export class Pago extends Pendientes {
     titulo = 'Caja y pagos';
-
     cajas = [];
     pagos = [];
     idCaja = '';
@@ -23,7 +26,7 @@ export class Pago extends Pendientes {
         return this.ejecutar(async () => {
             const [ordenes, cajas] = await Promise.all([
                 api.get('/orden/pendiente'),
-                api.get('/caja'),
+                api.get('/caja')
             ]);
 
             this.ordenes = ordenes;
@@ -45,11 +48,6 @@ export class Pago extends Pendientes {
     }
 
     plantilla() {
-        const calculo = resumen(
-            this.seleccion?.total || 0,
-            this.pagos
-        );
-
         return html`
             ${this.mensajes()}
 
@@ -67,17 +65,19 @@ export class Pago extends Pendientes {
                             class="boton"
                             href="${ticketUrl(this.resultado.idFactura)}"
                             target="_blank"
-                            rel="noopener">
+                            rel="noopener"
+                        >
                             Abrir ticket PDF para imprimir
                         </a>
 
                         <p>
-                            Puede seleccionar otra orden
-                            para realizar un nuevo cobro.
+                            Puede seleccionar otra orden para realizar
+                            un nuevo cobro.
                         </p>
                     </section>
                 `
-                : ''}
+                : ''
+            }
 
             ${this.lista()}
 
@@ -86,123 +86,10 @@ export class Pago extends Pendientes {
 
                 ${this.seleccion
                     ? html`
-                        <section class="panel">
-                            <h2>Registrar pago</h2>
-
-                            <label>
-                                Caja
-                                <select
-                                    id="caja"
-                                    ${deshabilitado(this.ocupado)}>
-                                    <option value="">
-                                        Seleccione una caja
-                                    </option>
-
-                                    ${this.cajas.map(caja => html`
-                                        <option value="${caja.idCaja}">
-                                            ${caja.nombre}
-                                        </option>
-                                    `)}
-                                </select>
-                            </label>
-
-                            <label>
-                                Cliente
-                                <input
-                                    id="cliente"
-                                    maxlength="155"
-                                    value="${this.cliente}"
-                                    ${deshabilitado(this.ocupado)}>
-                            </label>
-
-                            <form id="agregar">
-                                <label>
-                                    Forma de pago
-                                    <select id="tipo">
-                                        <option>Efectivo</option>
-                                        <option>Tarjeta</option>
-                                        <option>QR</option>
-                                    </select>
-                                </label>
-
-                                <label>
-                                    Monto
-                                    <input
-                                        id="monto"
-                                        type="number"
-                                        min="0.01"
-                                        step="0.01"
-                                        required>
-                                </label>
-
-                                <label>
-                                    Referencia, si corresponde
-                                    <input
-                                        id="referencia"
-                                        maxlength="200">
-                                </label>
-
-                                <button
-                                    ${deshabilitado(this.ocupado)}>
-                                    Agregar forma de pago
-                                </button>
-                            </form>
-
-                            <ul>
-                                ${this.pagos.map((pago, indice) => html`
-                                    <li class="fila">
-                                        <span>
-                                            ${pago.tipoPago}:
-                                            ${dinero(pago.monto)}
-                                        </span>
-
-                                        <button
-                                            data-quitar="${indice}"
-                                            class="secundario"
-                                            aria-label="Quitar pago ${indice + 1}"
-                                            ${deshabilitado(this.ocupado)}>
-                                            Quitar
-                                        </button>
-                                    </li>
-                                `)}
-                            </ul>
-
-                            <p role="status">
-                                Recibido:
-                                ${dinero(calculo.recibido / 100)}
-                                · Falta:
-                                ${dinero(calculo.saldo / 100)}
-                                · Vuelto:
-                                ${dinero(calculo.vuelto / 100)}
-                            </p>
-
-                            ${calculo.exceso
-                                ? html`
-                                    <p class="error">
-                                        Tarjeta y QR no pueden
-                                        superar el total.
-                                    </p>
-                                `
-                                : ''}
-
-                            <button
-                                id="cobrar"
-                                ${deshabilitado(
-                                    this.ocupado
-                                    || !this.pagos.length
-                                    || calculo.saldo > 0
-                                    || calculo.exceso
-                                )}>
-                                Confirmar cobro
-                            </button>
-
-                            <p class="muted">
-                                El cobro requiere conexión
-                                y confirmación del servidor.
-                            </p>
-                        </section>
+                        <cafe-formulario-pago></cafe-formulario-pago>
                     `
-                    : ''}
+                    : ''
+                }
             </div>
         `;
     }
@@ -212,112 +99,113 @@ export class Pago extends Pendientes {
 
         if (!this.seleccion) return;
 
-        this.$('#caja').value = this.idCaja;
+        this.configurarHijo(
+            'cafe-formulario-pago',
+            {
+                cajas: this.cajas,
+                pagos: this.pagos,
+                idCaja: this.idCaja,
+                cliente: this.cliente,
+                total: this.seleccion.total,
+                ocupado: this.ocupado
+            },
+            {
+                'cafefe:caja': id => {
+                    this.idCaja = id;
+                },
 
-        this.escuchar('#caja', 'change', evento => {
-            this.idCaja = evento.target.value;
-        });
+                'cafefe:cliente-factura': nombre => {
+                    this.cliente = nombre;
+                },
 
-        this.escuchar('#cliente', 'input', evento => {
-            this.cliente = evento.target.value;
-        });
+                'cafefe:agregar-pago': pago => this.agregarPago(pago),
 
-        this.escuchar('#agregar', 'submit', evento => {
-            evento.preventDefault();
+                'cafefe:quitar-pago': indice => {
+                    if (this.ocupado) return;
 
-            if (this.ocupado) return;
+                    this.pagos.splice(indice, 1);
+                    this.renderizar();
+                },
 
-            try {
-                const monto = centavos(this.$('#monto').value);
+                'cafefe:confirmar-cobro': () => this.cobrar()
+            }
+        );
+    }
 
-                if (monto <= 0) {
-                    throw new Error(
-                        'El monto debe ser mayor que cero.'
-                    );
-                }
+    agregarPago(pago) {
+        if (this.ocupado) return;
 
-                this.pagos.push({
-                    tipoPago: this.$('#tipo').value,
-                    monto: (monto / 100).toFixed(2),
-                    referenciaExterna:
-                        this.$('#referencia').value.trim(),
-                });
+        try {
+            const monto = centavos(pago.monto);
 
-                this.error = '';
-            } catch (error) {
-                this.error = error.message;
+            if (monto <= 0) {
+                throw new Error('El monto debe ser mayor que cero.');
             }
 
-            this.renderizar();
-        });
-
-        this.shadowRoot
-            .querySelectorAll('[data-quitar]')
-            .forEach(elemento => {
-                elemento.onclick = () => {
-                    this.pagos.splice(
-                        Number(elemento.dataset.quitar),
-                        1
-                    );
-
-                    this.renderizar();
-                };
+            this.pagos.push({
+                ...pago,
+                monto: (monto / 100).toFixed(2)
             });
 
-        this.escuchar('#cobrar', 'click', () => {
-            this.ejecutar(async () => {
-                validarCobro(this.seleccion.total, this.pagos);
+            this.error = '';
+        } catch (error) {
+            this.error = error.message;
+        }
 
-                if (!this.idCaja) {
-                    throw new Error('Seleccione una caja.');
-                }
+        this.renderizar();
+    }
 
-                if (!navigator.onLine) {
-                    throw new Error(
-                        'Sin conexión: no se registró el cobro.'
-                    );
-                }
+    cobrar() {
+        return this.ejecutar(async () => {
+            validarCobro(this.seleccion.total, this.pagos);
 
-                const rol = sesion.get('usuario')?.roles.find(
-                    asignacion =>
-                        normalizar(asignacion.rol) === 'cajero'
+            if (!this.idCaja) {
+                throw new Error('Seleccione una caja.');
+            }
+
+            if (!navigator.onLine) {
+                throw new Error(
+                    'Sin conexión: no se registró el cobro.'
                 );
+            }
 
-                if (!rol) {
-                    throw new Error('Debe ingresar como cajero.');
-                }
+            const rol = sesion.get('usuario')?.roles.find(
+                elemento => normalizar(elemento.rol) === 'cajero'
+            );
 
-                const id = this.seleccion.idOrden;
+            if (!rol) {
+                throw new Error('Debe ingresar como cajero.');
+            }
 
-                try {
-                    this.resultado = await api.post(
-                        `/orden/${encodeURIComponent(id)}/cobro`,
-                        {
-                            idCaja: this.idCaja,
-                            idEmpleadoRol: rol.idEmpleadoRol,
-                            cliente: this.cliente.trim(),
-                            pagos: this.pagos,
-                        }
-                    );
-                } catch (error) {
-                    if (error.status === 0) {
-                        throw new Error(
-                            'No recibimos confirmación. '
-                            + 'Actualice las órdenes y verifique '
-                            + 'el cobro antes de volver a cobrar.'
-                        );
+            const id = this.seleccion.idOrden;
+
+            try {
+                this.resultado = await api.post(
+                    `/orden/${encodeURIComponent(id)}/cobro`,
+                    {
+                        idCaja: this.idCaja,
+                        idEmpleadoRol: rol.idEmpleadoRol,
+                        cliente: this.cliente.trim(),
+                        pagos: this.pagos
                     }
-
-                    throw error;
+                );
+            } catch (error) {
+                if (error.status === 0) {
+                    throw new Error(
+                        'No recibimos confirmación. Actualice las órdenes ' +
+                        'y verifique el cobro antes de volver a cobrar.'
+                    );
                 }
 
-                this.ordenes = this.ordenes.filter(
-                    orden => orden.idOrden !== id
-                );
+                throw error;
+            }
 
-                this.seleccion = null;
-                this.pagos = [];
-            });
+            this.ordenes = this.ordenes.filter(
+                orden => orden.idOrden !== id
+            );
+
+            this.seleccion = null;
+            this.pagos = [];
         });
     }
 }

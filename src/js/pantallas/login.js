@@ -1,14 +1,12 @@
 import { Vista, deshabilitado } from '../base/Vista.js';
 import { html } from '../base/html.js';
-
 import {
     api,
     iniciarSesion,
     router,
     leer,
-    guardar,
+    guardar
 } from '../control/servicios.js';
-
 import { permite } from '../control/reglas.js';
 
 export class Login extends Vista {
@@ -190,10 +188,7 @@ export class Login extends Vista {
     plantilla() {
         return html`
             <div class="login">
-                <section
-                    class="tarjeta"
-                    aria-labelledby="titulo-login">
-
+                <section class="tarjeta" aria-labelledby="titulo-login">
                     <div class="encabezado">
                         <div class="distintivo" aria-hidden="true">
                             <svg
@@ -202,15 +197,11 @@ export class Login extends Vista {
                                 stroke="currentColor"
                                 stroke-width="2"
                                 stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="
-                                    M5 12h18v9
-                                    a6 6 0 0 1-6 6h-6
-                                    a6 6 0 0 1-6-6z
-                                    M23 14h2a4 4 0 0 1 0 8h-2
-                                    M10 7V3m7 4V3
-                                    M3 30h23
-                                "/>
+                                stroke-linejoin="round"
+                            >
+                                <path
+                                    d="M5 12h18v9a6 6 0 0 1-6 6h-6a6 6 0 0 1-6-6zM23 14h2a4 4 0 0 1 0 8h-2M10 7V3m7 4V3M3 30h23"
+                                />
                             </svg>
                         </div>
 
@@ -222,8 +213,8 @@ export class Login extends Vista {
 
                     <form
                         aria-label="Ingreso de empleados"
-                        aria-busy="${this.ocupado}">
-
+                        aria-busy="${this.ocupado}"
+                    >
                         <label class="etiqueta" for="nombre">
                             Usuario
                         </label>
@@ -234,7 +225,8 @@ export class Login extends Vista {
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="1.8"
-                                aria-hidden="true">
+                                aria-hidden="true"
+                            >
                                 <circle cx="12" cy="7" r="4"/>
                                 <path d="M4 21v-2a8 8 0 0 1 16 0v2"/>
                             </svg>
@@ -247,7 +239,8 @@ export class Login extends Vista {
                                 placeholder="Tu nombre de empleado"
                                 value="${this.nombre}"
                                 required
-                                ${deshabilitado(this.ocupado)}>
+                                ${deshabilitado(this.ocupado)}
+                            >
                         </div>
 
                         <label class="etiqueta" for="uid">
@@ -260,17 +253,16 @@ export class Login extends Vista {
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="1.8"
-                                aria-hidden="true">
+                                aria-hidden="true"
+                            >
                                 <rect
                                     x="5"
                                     y="10"
                                     width="14"
                                     height="11"
-                                    rx="2"/>
-                                <path d="
-                                    M8 10V7a4 4 0 0 1 8 0v3
-                                    M12 14v3
-                                "/>
+                                    rx="2"
+                                />
+                                <path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/>
                             </svg>
 
                             <input
@@ -281,12 +273,12 @@ export class Login extends Vista {
                                 placeholder="Tu identificador de empleado"
                                 aria-describedby="ayuda-uid"
                                 required
-                                ${deshabilitado(this.ocupado)}>
+                                ${deshabilitado(this.ocupado)}
+                            >
                         </div>
 
                         <p id="ayuda-uid" class="ayuda">
-                            Tu contraseña es el identificador único
-                            de empleado.
+                            Tu contraseña es el identificador único de empleado.
                         </p>
 
                         <div class="acciones">
@@ -294,18 +286,17 @@ export class Login extends Vista {
                                 <input
                                     id="recordar"
                                     type="checkbox"
-                                    ${deshabilitado(this.ocupado)}>
+                                    ${deshabilitado(this.ocupado)}
+                                >
                                 Recordar mi nombre
                             </label>
 
                             <button
                                 class="ingresar"
                                 type="submit"
-                                ${deshabilitado(this.ocupado)}>
-                                ${this.ocupado
-                                    ? 'Ingresando…'
-                                    : 'Iniciar sesión'}
-
+                                ${deshabilitado(this.ocupado)}
+                            >
+                                ${this.ocupado ? 'Ingresando…' : 'Iniciar sesión'}
                                 <span aria-hidden="true">→</span>
                             </button>
                         </div>
@@ -347,7 +338,7 @@ export class Login extends Vista {
             this.ejecutar(async () => {
                 const usuario = await api.post('/login', {
                     nombre,
-                    uid,
+                    uid
                 });
 
                 guardar(

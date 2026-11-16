@@ -1,33 +1,44 @@
-const VERSION = 'cafefe-ui-v1';
+const VERSION = 'cafefe-ui-v6';
 
 const ARCHIVOS = [
-    './',
     'index.html',
     'manifest.webmanifest',
 
     'resources/estilos/tokens.css',
+    'resources/estilos/estilos.js',
+    'resources/imagenes/logo-cafefe.jpg',
 
     'js/app.js',
     'js/config.js',
-    'js/api.js',
-    'js/router.js',
-    'js/rutas.js',
-    'js/servicios.js',
-    'js/reglas.js',
-    'js/estilos.js',
-    'js/vista.js',
-
-    'js/login.js',
-    'js/orden.js',
-    'js/pendientes.js',
-    'js/pago.js',
 
     'js/base/CafeElement.js',
     'js/base/Store.js',
+    'js/base/Vista.js',
     'js/base/html.js',
 
+    'js/control/api.js',
+    'js/control/imagen-categoria.js',
+    'js/control/reglas.js',
+    'js/control/servicios.js',
+
+    'js/navegacion/router.js',
+    'js/navegacion/rutas.js',
+
     'js/componentes/cafe-app.js',
-    'js/pantallas/cafe-pantalla-no-encontrada.js',
+    'js/componentes/cafe-carrito.js',
+    'js/componentes/cafe-catalogo.js',
+    'js/componentes/cafe-detalle-orden.js',
+    'js/componentes/cafe-encabezado.js',
+    'js/componentes/cafe-formulario-pago.js',
+    'js/componentes/cafe-lista-ordenes.js',
+    'js/componentes/cafe-lista-productos.js',
+    'js/componentes/cafe-tarjeta-categoria.js',
+
+    'js/pantallas/login.js',
+    'js/pantallas/orden.js',
+    'js/pantallas/pago.js',
+    'js/pantallas/pantalla-no-encontrada.js',
+    'js/pantallas/pendientes.js'
 ];
 
 const URLs = new Set(
@@ -38,41 +49,66 @@ const URLs = new Set(
 
 self.addEventListener('install', evento => {
     evento.waitUntil(
-        caches.open(VERSION)
-            .then(cache => cache.addAll(ARCHIVOS))
+        caches.open(VERSION).then(cache =>
+            cache.addAll([...URLs])
+        )
     );
 });
 
 self.addEventListener('activate', evento => {
-    evento.waitUntil(
-        caches.keys()
-            .then(claves => Promise.all(
-                claves
-                    .filter(clave =>
-                        clave.startsWith('cafefe-ui-')
-                        && clave !== VERSION
-                    )
-                    .map(clave => caches.delete(clave))
-            ))
-            .then(() => self.clients.claim())
-    );
+    evento.waitUntil((async () => {
+        const claves = await caches.keys();
+
+        await Promise.all(
+            claves
+                .filter(clave =>
+                    clave.startsWith('cafefe-ui-')
+                    && clave !== VERSION
+                )
+                .map(clave => caches.delete(clave))
+        );
+
+        await self.clients.claim();
+    })());
 });
 
 self.addEventListener('fetch', evento => {
+    if (evento.request.method !== 'GET') return;
+
     const url = new URL(evento.request.url);
+
     url.search = '';
+    url.hash = '';
 
     if (
-        evento.request.method !== 'GET'
-        || !URLs.has(url.href)
+        evento.request.mode === 'navigate'
+        && url.href === self.registration.scope
     ) {
-        return;
+        url.pathname += 'index.html';
     }
 
-    evento.respondWith(
-        caches.match(url.href)
-            .then(guardado =>
-                guardado || fetch(evento.request)
-            )
-    );
+    if (!URLs.has(url.href)) return;
+
+    evento.respondWith((async () => {
+        const cache = await caches.open(VERSION);
+        const guardado = await cache.match(url.href);
+
+        if (guardado) {
+            return guardado;
+        }
+
+        try {
+            return await fetch(evento.request);
+        } catch {
+            return new Response(
+                'Recurso no disponible sin conexión.',
+                {
+                    status: 503,
+                    headers: {
+                        'Content-Type': 'text/plain; charset=utf-8'
+                    }
+                }
+            );
+        }
+    })());
 });

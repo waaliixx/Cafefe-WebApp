@@ -2,26 +2,39 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Pruebas · Cafefe</title>
-    <link rel="stylesheet" href="js/lib/mocha/mocha.css">
+
+    <link
+        rel="stylesheet"
+        href="js/lib/mocha/mocha.css"
+    >
 </head>
 <body>
     <div id="mocha"></div>
+
     <script src="js/lib/mocha/mocha.js"></script>
-    <script>mocha.setup({ ui: 'bdd' });</script>
+
+    <script>
+        mocha.setup({ ui: 'bdd' });
+    </script>
+
     <script type="module">
-        // Siempre primero: registra expect y sinon como globales.
         import './js/globals.js';
 
-        // Una línea por archivo de pruebas.
-        import './js/html.test.js';
-        import './js/store.test.js';
-        import './js/router.test.js';
-        import './js/api.test.js';
-        import './js/cafe-element.test.js';
-        import './js/cafe-app.test.js';
-        import './js/flujo.test.js';
+        import './js/base/html.test.js';
+        import './js/base/store.test.js';
+        import './js/navegacion/router.test.js';
+        import './js/control/api.test.js';
+        import './js/base/cafe-element.test.js';
+        import './js/componentes/cafe-app.test.js';
+        import './js/pantallas/flujo.test.js';
+
         mocha.run();
     </script>
 </body>

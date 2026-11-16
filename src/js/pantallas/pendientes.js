@@ -1,7 +1,9 @@
-import { Vista, deshabilitado } from '../base/Vista.js';
+import { Vista } from '../base/Vista.js';
 import { html } from '../base/html.js';
 import { api } from '../control/servicios.js';
-import { dinero } from '../control/reglas.js';
+
+import '../componentes/cafe-lista-ordenes.js';
+import '../componentes/cafe-detalle-orden.js';
 
 export class Pendientes extends Vista {
     ordenes = [];
@@ -29,8 +31,8 @@ export class Pendientes extends Vista {
 
             if (!orden.productos.length) {
                 throw new Error(
-                    'La orden ya no tiene productos pendientes. '
-                    + 'Actualice el listado.'
+                    'La orden ya no tiene productos pendientes. ' +
+                    'Actualice el listado.'
                 );
             }
 
@@ -39,92 +41,20 @@ export class Pendientes extends Vista {
         });
     }
 
-    alSeleccionar() {}
+    alSeleccionar() {
+        // La pantalla de pago agrega aquí su comportamiento.
+    }
 
     lista() {
         return html`
-            <section>
-                <div class="fila">
-                    <h1>${this.titulo}</h1>
-
-                    <button
-                        id="actualizar"
-                        ${deshabilitado(this.ocupado)}>
-                        Actualizar órdenes
-                    </button>
-                </div>
-
-                <p>
-                    Se muestran únicamente productos pendientes de pago.
-                    Actualice para consultar los cambios.
-                </p>
-
-                <div class="grid">
-                    ${this.ordenes.map(orden => html`
-                        <button
-                            class="categoria"
-                            data-orden="${orden.idOrden}"
-                            ${deshabilitado(this.ocupado)}>
-                            <strong>
-                                ${orden.cliente || 'Cliente del local'}
-                            </strong>
-
-                            <span>${orden.idOrden.slice(0, 8)}</span>
-
-                            <span>
-                                ${orden.fechaCreacion
-                                    ? new Date(
-                                        orden.fechaCreacion
-                                    ).toLocaleString('es-SV')
-                                    : ''}
-                            </span>
-
-                            <span>${dinero(orden.total)}</span>
-                            <small>${orden.tomadaPor || ''}</small>
-                        </button>
-                    `)}
-                </div>
-
-                ${!this.ocupado && !this.ordenes.length
-                    ? html`<p>No hay órdenes pendientes.</p>`
-                    : ''}
-            </section>
+            <cafe-lista-ordenes></cafe-lista-ordenes>
         `;
     }
 
     detalle() {
-        const orden = this.seleccion;
-
-        return orden
-            ? html`
-                <section class="panel">
-                    <h2>${orden.cliente || 'Detalle de orden'}</h2>
-                    <p>Orden: ${orden.idOrden}</p>
-
-                    <ul>
-                        ${orden.productos.map(producto => html`
-                            <li>
-                                <strong>${producto.producto}</strong>
-                                · ${dinero(producto.precio)}
-
-                                ${producto.nota
-                                    ? html`
-                                        <small>
-                                            Indicaciones:
-                                            ${producto.nota}
-                                        </small>
-                                    `
-                                    : ''}
-                            </li>
-                        `)}
-                    </ul>
-
-                    <p class="total">
-                        Total: ${dinero(orden.total)}
-                    </p>
-                </section>
-            `
-            : '';
+        return html`
+            <cafe-detalle-orden></cafe-detalle-orden>
+        `;
     }
 
     plantilla() {
@@ -136,14 +66,25 @@ export class Pendientes extends Vista {
     }
 
     despuesDeRenderizar() {
-        this.escuchar('#actualizar', 'click', () => this.cargar());
+        this.configurarHijo(
+            'cafe-lista-ordenes',
+            {
+                ordenes: this.ordenes,
+                titulo: this.titulo,
+                ocupado: this.ocupado
+            },
+            {
+                'cafefe:actualizar-ordenes': () => this.cargar(),
+                'cafefe:seleccionar-orden': id => this.elegir(id)
+            }
+        );
 
-        this.shadowRoot
-            .querySelectorAll('[data-orden]')
-            .forEach(elemento => {
-                elemento.onclick = () =>
-                    this.elegir(elemento.dataset.orden);
-            });
+        this.configurarHijo(
+            'cafe-detalle-orden',
+            {
+                orden: this.seleccion
+            }
+        );
     }
 }
 

@@ -71,4 +71,19 @@ export class Vista extends CafeElement {
     escuchar(selector, evento, accion) {
         this.$(selector)?.addEventListener(evento, accion);
     }
+
+    configurarHijo(selector, datos, eventos = {}) {
+        const hijo = this.$(selector);
+
+        if (!hijo) return;
+
+        hijo.setEstado(datos);
+
+        for (const [nombre, accion] of Object.entries(eventos)) {
+            hijo.addEventListener(nombre, evento => {
+                accion(evento.detail);
+            });
+        }
+    }
+
 }

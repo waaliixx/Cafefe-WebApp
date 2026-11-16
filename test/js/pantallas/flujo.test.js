@@ -123,6 +123,7 @@ describe('Pantallas conectadas al contrato del API', () => {
     let usuarioAnterior;
     let borradorAnterior;
     let sesionAnterior;
+    let nombreAnterior;
 
     const esperar = () =>
         new Promise(resolve => setTimeout(resolve, 0));
@@ -151,6 +152,7 @@ describe('Pantallas conectadas al contrato del API', () => {
         usuarioAnterior = sesion.get('usuario');
         borradorAnterior = localStorage.getItem('cafefe.borrador');
         sesionAnterior = sessionStorage.getItem('cafefe.sesion');
+        nombreAnterior = localStorage.getItem('cafefe.login.nombre');
 
         localStorage.removeItem('cafefe.borrador');
         sesion.set({ usuario });
@@ -185,6 +187,7 @@ describe('Pantallas conectadas al contrato del API', () => {
 
         for (const [almacen, clave, valor] of [
             [localStorage, 'cafefe.borrador', borradorAnterior],
+            [localStorage, 'cafefe.login.nombre', nombreAnterior],
             [sessionStorage, 'cafefe.sesion', sesionAnterior],
         ]) {
             if (valor === null) {
@@ -283,7 +286,7 @@ describe('Pantallas conectadas al contrato del API', () => {
             get.calledWith('/orden/pendiente/orden-1')
         ).to.equal(true);
 
-        expect(pantalla.shadowRoot.textContent)
+        expect(pantalla.$('cafe-detalle-orden').shadowRoot.textContent)
             .to.include('Sin azúcar');
     });
 
@@ -313,7 +316,7 @@ describe('Pantallas conectadas al contrato del API', () => {
         }];
 
         pantalla.renderizar();
-        pantalla.$('#cobrar').click();
+        pantalla.$('cafe-formulario-pago').shadowRoot.querySelector('#cobrar').click();
 
         await esperar();
 
@@ -338,7 +341,7 @@ describe('Pantallas conectadas al contrato del API', () => {
         }];
 
         pantalla.renderizar();
-        pantalla.$('#cobrar').click();
+        pantalla.$('cafe-formulario-pago').shadowRoot.querySelector('#cobrar').click();
 
         await esperar();
 
