@@ -1,11 +1,13 @@
 import { Vista } from '../base/Vista.js';
 import { html } from '../base/html.js';
-import { api } from '../control/servicios.js';
+import { api, sesion } from '../control/servicios.js';
 
 import '../componentes/cafe-lista-ordenes.js';
 import '../componentes/cafe-detalle-orden.js';
+import '../componentes/cafe-tablero-recepcion.js';
 
 export class Pendientes extends Vista {
+    cargado = false;
     ordenes = [];
     seleccion = null;
     titulo = 'Recepción de órdenes';
@@ -22,6 +24,8 @@ export class Pendientes extends Vista {
 
     cargar() {
         return this.ejecutar(async () => {
+            this.ordenes = await api.get('/orden/pendiente');
+            this.cargado = true;
             this.ordenes = await api.get('/orden/preparacion');
             this.seleccion = null;
         });
@@ -85,14 +89,34 @@ export class Pendientes extends Vista {
     }
 
     plantilla() {
+        const nombre = sesion.get('usuario')?.empleado?.nombre;
         return html`
+            <h1>${nombre ? `¡Hola, ${nombre}!` : 'Recepción de órdenes'}</h1>
+            <p>Selecciona un pedido para consultar sus productos e indicaciones.</p>
             ${this.mensajes()}
-            ${this.lista()}
-            ${this.detalle()}
+            <cafe-tablero-recepcion></cafe-tablero-recepcion>
         `;
     }
 
     despuesDeRenderizar() {
+        this.configurarHijo('cafe-tablero-recepcion', {
+            ordenes: this.ordenes,
+            seleccion: this.seleccion,
+            ocupado: this.ocupado,
+            cargado: this.cargado
+        }, {
+            'cafefe:actualizar-ordenes': () => this.cargar(),
+            'cafefe:seleccionar-orden': id => {
+                if (this.ocupado) return;
+                if (this.seleccion?.idOrden === id) {
+                    this.seleccion = null;
+                    this.renderizar();
+                } else {
+                    this.elegir(id);
+                }
+            }
+        });
+
         this.configurarHijo(
             'cafe-lista-ordenes',
             {

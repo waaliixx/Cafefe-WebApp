@@ -1,41 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2a1a1f">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Cafefe</title>
 
-    <title>Pruebas · Cafefe</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="resources/imagenes/icono.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="resources/estilos/tokens.css">
 
-    <link
-        rel="stylesheet"
-        href="js/lib/mocha/mocha.css"
-    >
+    <script type="module" src="js/app.js"></script>
 </head>
 <body>
-    <div id="mocha"></div>
+    <cafe-app></cafe-app>
 
-    <script src="js/lib/mocha/mocha.js"></script>
-
-    <script>
-        mocha.setup({ ui: 'bdd' });
-    </script>
-
-    <script type="module">
-        import './js/globals.js';
-
-        import './js/base/html.test.js';
-        import './js/base/store.test.js';
-        import './js/navegacion/router.test.js';
-        import './js/control/api.test.js';
-        import './js/base/cafe-element.test.js';
-        import './js/componentes/cafe-app.test.js';
-        import './js/pantallas/flujo.test.js';
-
-        mocha.run();
-    </script>
+    <noscript>
+        Cafefe necesita JavaScript para funcionar.
+    </noscript>
 </body>
 </html>

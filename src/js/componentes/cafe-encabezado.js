@@ -4,7 +4,9 @@ import { permite } from '../control/reglas.js';
 
 export class Encabezado extends Vista {
     static estilos = Vista.estilos + `
-        :host { display: block; }
+        :host {
+            display: block;
+        }
 
         header {
             background: var(--cafe-grano);
@@ -55,9 +57,29 @@ export class Encabezado extends Vista {
             text-align: right;
         }
 
-        nav a {
-            color: var(--cafe-crema);
-            text-underline-offset: .25em;
+        .boton-navegacion,
+        #salir {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: .75rem 1.2rem;
+            border-radius: .55rem;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .boton-navegacion {
+            background: var(--cafe-caramelo);
+            color: var(--cafe-grano);
+        }
+
+        #salir {
+            border: 0;
+            cursor: pointer;
+            background: var(--cafe-crema);
+            color: var(--cafe-grano);
         }
 
         .acceso {
@@ -72,11 +94,6 @@ export class Encabezado extends Vista {
             font-weight: 700;
         }
 
-        #salir {
-            background: var(--cafe-crema);
-            color: var(--cafe-grano);
-        }
-
         @media (max-width: 520px) {
             .barra {
                 padding: 1rem;
@@ -84,8 +101,14 @@ export class Encabezado extends Vista {
                 flex-wrap: wrap;
             }
 
-            .marca { gap: .65rem; }
-            .logo { width: 60px; height: 60px; }
+            .marca {
+                gap: .65rem;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
 
             nav {
                 margin-left: auto;
@@ -103,28 +126,33 @@ export class Encabezado extends Vista {
                     <a
                         class="marca"
                         href="#/orden"
-                        aria-label="Cafefe, ir a pedidos">
+                        aria-label="Cafefe, ir a pedidos"
+                    >
                         <img
                             class="logo"
                             src="resources/imagenes/logo-cafefe.jpg"
                             alt=""
                             width="78"
-                            height="78">
+                            height="78"
+                        >
+
                         <span class="titulo">Cafefe</span>
                     </a>
 
                     <nav aria-label="Acceso de empleados">
                         ${usuario
                             ? html`
-                                <span>${usuario.empleado.nombre}</span>
-
                                 ${permite(usuario, ['barista', 'cocinero'])
-                                    ? html`<a href="#/recepcion">Recepción</a>`
-                                    : ''}
-
-                                ${permite(usuario, ['cajero'])
-                                    ? html`<a href="#/pago">Caja</a>`
-                                    : ''}
+                                    ? html`
+                                        <a
+                                            class="boton-navegacion"
+                                            href="#/recepcion"
+                                        >
+                                            Recepción
+                                        </a>
+                                    `
+                                    : ''
+                                }
 
                                 <button id="salir" type="button">
                                     Salir
@@ -133,13 +161,16 @@ export class Encabezado extends Vista {
                             : html`
                                 <p class="acceso">
                                     <span>¿Quieres iniciar sesión?</span>
+
                                     <a
                                         href="#/login"
-                                        aria-label="Haz click aquí para iniciar sesión">
+                                        aria-label="Haz click aquí para iniciar sesión"
+                                    >
                                         Haz click aquí
                                     </a>
                                 </p>
-                            `}
+                            `
+                        }
                     </nav>
                 </div>
             </header>
