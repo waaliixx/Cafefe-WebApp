@@ -4,19 +4,19 @@ import {
     validarCobro,
     validarOrden,
     permite,
-} from '../../src/js/reglas.js';
+} from '../../../src/js/control/reglas.js';
 
 import {
     api,
     sesion,
     router,
     consultarMenu,
-} from '../../src/js/servicios.js';
+} from '../../../src/js/control/servicios.js';
 
-import '../../src/js/login.js';
-import '../../src/js/orden.js';
-import '../../src/js/pendientes.js';
-import '../../src/js/pago.js';
+import '../../../src/js/pantallas/login.js';
+import '../../../src/js/pantallas/orden.js';
+import '../../../src/js/pantallas/pendientes.js';
+import '../../../src/js/pantallas/pago.js';
 
 describe('Reglas de pedidos, acceso y cobros', () => {
     it('calcula centavos sin sumar decimales binarios', () => {

@@ -1,11 +1,11 @@
-import './login.js';
-import './orden.js';
-import './pendientes.js';
-import './pago.js';
-import './pantallas/cafe-pantalla-no-encontrada.js';
+import './pantallas/login.js';
+import './pantallas/orden.js';
+import './pantallas/pendientes.js';
+import './pantallas/pago.js';
+import './pantallas/pantalla-no-encontrada.js';
 import './componentes/cafe-app.js';
 
-import { router } from './servicios.js';
+import { router } from './control/servicios.js';
 
 router.iniciar();
 

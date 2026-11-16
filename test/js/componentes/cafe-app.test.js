@@ -1,6 +1,6 @@
-import '../../src/js/componentes/cafe-app.js';
-import { CafeElement } from '../../src/js/base/CafeElement.js';
-import { html } from '../../src/js/base/html.js';
+import '../../../src/js/componentes/cafe-app.js';
+import { CafeElement } from '../../../src/js/base/CafeElement.js';
+import { html } from '../../../src/js/base/html.js';
 
 class PruebaPantalla extends CafeElement {
     plantilla() {

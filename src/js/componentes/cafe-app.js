@@ -1,12 +1,12 @@
 import { CafeElement } from '../base/CafeElement.js';
 import { html } from '../base/html.js';
-import { estilos } from '../estilos.js';
+import { estilos } from '../../resources/estilos/estilos.js';
 import {
     router as routerGlobal,
     sesion,
     iniciarSesion,
-} from '../servicios.js';
-import { permite } from '../reglas.js';
+} from '../control/servicios.js';
+import { permite } from '../control/reglas.js';
 
 export class CafeApp extends CafeElement {
     static estilos = estilos + `

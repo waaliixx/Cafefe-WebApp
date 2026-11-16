@@ -1,14 +1,14 @@
 import { Pendientes } from './pendientes.js';
-import { deshabilitado } from './vista.js';
-import { html } from './base/html.js';
-import { api, sesion, ticketUrl } from './servicios.js';
+import { deshabilitado } from '../base/Vista.js';
+import { html } from '../base/html.js';
+import { api, sesion, ticketUrl } from '../control/servicios.js';
 import {
     dinero,
     centavos,
     resumen,
     validarCobro,
     normalizar,
-} from './reglas.js';
+} from '../control/reglas.js';
 
 export class Pago extends Pendientes {
     titulo = 'Caja y pagos';

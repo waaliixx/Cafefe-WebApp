@@ -1,7 +1,7 @@
-import { Vista, deshabilitado } from './vista.js';
-import { html } from './base/html.js';
-import { api } from './servicios.js';
-import { dinero } from './reglas.js';
+import { Vista, deshabilitado } from '../base/Vista.js';
+import { html } from '../base/html.js';
+import { api } from '../control/servicios.js';
+import { dinero } from '../control/reglas.js';
 
 export class Pendientes extends Vista {
     ordenes = [];

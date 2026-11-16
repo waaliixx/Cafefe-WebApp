@@ -1,6 +1,6 @@
-import { CafeElement } from './base/CafeElement.js';
-import { html, crudo } from './base/html.js';
-import { estilos } from './estilos.js';
+import { CafeElement } from './CafeElement.js';
+import { html, crudo } from './html.js';
+import { estilos } from '../../resources/estilos/estilos.js';
 
 export const deshabilitado = condicion =>
     crudo(condicion ? 'disabled' : '');

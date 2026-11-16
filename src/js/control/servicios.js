@@ -1,8 +1,8 @@
-import { CONFIG } from './config.js';
+import { CONFIG } from '../config.js';
 import { ApiClient } from './api.js';
-import { Store } from './base/Store.js';
-import { Router } from './router.js';
-import { rutas } from './rutas.js';
+import { Store } from '../base/Store.js';
+import { Router } from '../navegacion/router.js';
+import { rutas } from '../navegacion/rutas.js';
 import { permite } from './reglas.js';
 
 export function leer(clave, defecto, tipo = 'localStorage') {

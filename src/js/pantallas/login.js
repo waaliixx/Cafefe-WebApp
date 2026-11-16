@@ -1,7 +1,7 @@
-import { Vista, deshabilitado } from './vista.js';
-import { html } from './base/html.js';
-import { api, iniciarSesion, router } from './servicios.js';
-import { permite } from './reglas.js';
+import { Vista, deshabilitado } from '../base/Vista.js';
+import { html } from '../base/html.js';
+import { api, iniciarSesion, router } from '../control/servicios.js';
+import { permite } from '../control/reglas.js';
 
 export class Login extends Vista {
     nombre = '';

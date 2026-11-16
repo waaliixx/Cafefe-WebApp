@@ -1,17 +1,17 @@
-import { Vista, deshabilitado } from './vista.js';
-import { html } from './base/html.js';
+import { Vista, deshabilitado } from '../base/Vista.js';
+import { html } from '../base/html.js';
 import {
     api,
     consultarMenu,
     leer,
     guardar,
-} from './servicios.js';
+} from '../control/servicios.js';
 import {
     normalizar,
     dinero,
     centavos,
     validarOrden,
-} from './reglas.js';
+} from '../control/reglas.js';
 
 /** Ilustraciones propias; no requieren archivos ni servicios externos. */
 export function imagenCategoria(nombre) {
