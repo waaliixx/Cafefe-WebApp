@@ -2,7 +2,7 @@ import { Vista, deshabilitado } from '../base/Vista.js';
 import { html } from '../base/html.js';
 import { dinero } from '../control/reglas.js';
 
-/** Una orden pendiente dentro del tablero de caja. */
+/** Una orden pendiente dentro del tablero de caja. :b */
 export class TarjetaCobro extends Vista {
     static estilos = Vista.estilos + `
         :host { display: block; min-width: 0; }

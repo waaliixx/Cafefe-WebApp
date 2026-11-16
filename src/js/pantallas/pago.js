@@ -6,7 +6,7 @@ import { dinero, centavos, normalizar, validarCobro } from '../control/reglas.js
 import '../componentes/cafe-tablero-caja.js';
 import '../componentes/cafe-formulario-pago.js';
 
-/** HU4: un cajero selecciona una orden, registra el pago y obtiene su ticket. */
+/** HU4: un cajero selecciona una orden, registra el pago y obtiene su ticket */
 export class Pago extends Vista {
     titulo = 'Caja y pagos';
     cargado = false;

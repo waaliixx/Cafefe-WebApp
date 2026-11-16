@@ -2,7 +2,7 @@ import { Vista, deshabilitado } from '../base/Vista.js';
 import { html } from '../base/html.js';
 import './cafe-tarjeta-cobro.js';
 
-/** Lista de órdenes que esperan ser cobradas. */
+/** Lista de órdenes que esperan ser cobradas. :)) */
 export class TableroCaja extends Vista {
     static estilos = Vista.estilos + `
         .barra { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }

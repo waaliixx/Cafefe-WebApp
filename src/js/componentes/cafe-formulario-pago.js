@@ -2,7 +2,7 @@ import { Vista, deshabilitado } from '../base/Vista.js';
 import { html } from '../base/html.js';
 import { dinero, resumen } from '../control/reglas.js';
 
-/** Detalle de la orden y formulario para registrar sus formas de pago. */
+/** Detalle de la ordwn y formulario para registrar sus formas de pago. */
 export class FormularioPago extends Vista {
     static estilos = Vista.estilos + `
         :host { display: block; }
