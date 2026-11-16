@@ -12,6 +12,12 @@ export class Pendientes extends Vista {
 
     alConectar() {
         this.cargar();
+        this.actualizarAlRegresar = () => this.cargar();
+        window.addEventListener('focus', this.actualizarAlRegresar);
+    }
+
+    alDesconectar() {
+        window.removeEventListener('focus', this.actualizarAlRegresar);
     }
 
     cargar() {
@@ -71,7 +77,8 @@ export class Pendientes extends Vista {
             {
                 ordenes: this.ordenes,
                 titulo: this.titulo,
-                ocupado: this.ocupado
+                ocupado: this.ocupado,
+                seleccionado: this.seleccion?.idOrden ?? null
             },
             {
                 'cafefe:actualizar-ordenes': () => this.cargar(),

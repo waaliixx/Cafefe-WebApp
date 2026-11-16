@@ -53,7 +53,7 @@ export class Pago extends Pendientes {
 
             ${this.resultado
                 ? html`
-                    <section class="panel" role="status">
+                    <section class="panel comprobante" role="status">
                         <h2>Cobro registrado</h2>
 
                         <p>
@@ -70,10 +70,7 @@ export class Pago extends Pendientes {
                             Abrir ticket PDF para imprimir
                         </a>
 
-                        <p>
-                            Puede seleccionar otra orden para realizar
-                            un nuevo cobro.
-                        </p>
+                        <p>La transacción fue confirmada por Cafefe. Abrí el PDF para imprimirlo.</p>
                     </section>
                 `
                 : ''
@@ -112,6 +109,7 @@ export class Pago extends Pendientes {
             {
                 'cafefe:caja': id => {
                     this.idCaja = id;
+                    this.renderizar();
                 },
 
                 'cafefe:cliente-factura': nombre => {
@@ -158,6 +156,10 @@ export class Pago extends Pendientes {
     cobrar() {
         return this.ejecutar(async () => {
             validarCobro(this.seleccion.total, this.pagos);
+
+            if (this.cliente.trim().length > 155) {
+                throw new Error('El nombre del cliente no puede superar los 155 caracteres.');
+            }
 
             if (!this.idCaja) {
                 throw new Error('Seleccione una caja.');

@@ -1,8 +1,10 @@
+import { estilosOperativos } from '../../resources/estilos/estilos.js';
 import { Vista, deshabilitado } from '../base/Vista.js';
 import { html } from '../base/html.js';
 import { dinero, resumen } from '../control/reglas.js';
 
 export class FormularioPago extends Vista {
+    static estilos = Vista.estilos + estilosOperativos;
     plantilla() {
         const {
             cajas = [],
@@ -40,6 +42,13 @@ export class FormularioPago extends Vista {
                         ${deshabilitado(ocupado)}>
                 </label>
 
+                <div class="pago-resumen" aria-live="polite">
+                    <div class="fila"><span>Total de la orden</span><strong>${dinero(total)}</strong></div>
+                    <div class="fila"><span>Abonado</span><strong>${dinero(calculo.recibido / 100)}</strong></div>
+                    <div class="fila"><span>Saldo pendiente</span><strong>${dinero(calculo.saldo / 100)}</strong></div>
+                    ${calculo.vuelto ? html`<div class="fila"><span>Vuelto en efectivo</span><strong>${dinero(calculo.vuelto / 100)}</strong></div>` : ''}
+                </div>
+
                 <form id="agregar">
                     <label>
                         Forma de pago
@@ -69,9 +78,13 @@ export class FormularioPago extends Vista {
                             ${deshabilitado(ocupado)}>
                     </label>
 
-                    <button ${deshabilitado(ocupado)}>
-                        Agregar forma de pago
-                    </button>
+                    <div class="fila">
+                        <button type="button" id="completar" class="secundario"
+                            ${deshabilitado(ocupado || calculo.saldo === 0)}>
+                            Usar saldo restante
+                        </button>
+                        <button ${deshabilitado(ocupado)}>Agregar pago</button>
+                    </div>
                 </form>
 
                 <ul>
@@ -92,11 +105,6 @@ export class FormularioPago extends Vista {
                     `)}
                 </ul>
 
-                <p role="status">
-                    Recibido: ${dinero(calculo.recibido / 100)}
-                    · Falta: ${dinero(calculo.saldo / 100)}
-                    · Vuelto: ${dinero(calculo.vuelto / 100)}
-                </p>
 
                 ${calculo.exceso
                     ? html`
@@ -113,6 +121,7 @@ export class FormularioPago extends Vista {
                         || !pagos.length
                         || calculo.saldo > 0
                         || calculo.exceso
+                        || !this.estado.idCaja
                     )}>
                     Confirmar cobro
                 </button>
@@ -137,6 +146,12 @@ export class FormularioPago extends Vista {
                 'cafefe:cliente-factura',
                 evento.target.value
             );
+        });
+
+        this.escuchar('#completar', 'click', () => {
+            const { saldo } = resumen(this.estado.total, this.estado.pagos);
+            if (saldo > 0) this.$('#monto').value = (saldo / 100).toFixed(2);
+            this.$('#monto').focus();
         });
 
         this.escuchar('#agregar', 'submit', evento => {
