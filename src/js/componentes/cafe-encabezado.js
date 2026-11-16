@@ -154,6 +154,18 @@ export class Encabezado extends Vista {
                                     : ''
                                 }
 
+                                ${permite(usuario, ['cajero'])
+                                    ? html`
+                                        <a
+                                            class="boton-navegacion"
+                                            href="#/pago"
+                                        >
+                                            Caja
+                                        </a>
+                                    `
+                                    : ''
+                                }
+
                                 <button id="salir" type="button">
                                     Salir
                                 </button>
