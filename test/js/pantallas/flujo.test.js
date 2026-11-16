@@ -286,7 +286,8 @@ describe('Pantallas conectadas al contrato del API', () => {
             get.calledWith('/orden/pendiente/orden-1')
         ).to.equal(true);
 
-        expect(pantalla.$('cafe-detalle-orden').shadowRoot.textContent)
+        expect(pantalla.$('cafe-tablero-recepcion').shadowRoot
+            .querySelector('cafe-tarjeta-orden').shadowRoot.textContent)
             .to.include('Sin azúcar');
     });
 

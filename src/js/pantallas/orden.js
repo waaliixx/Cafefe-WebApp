@@ -163,8 +163,8 @@ export class Orden extends Vista {
             ${this.copia
                 ? html`
                     <p class="aviso">
-                        Menú guardado. La disponibilidad y los precios
-                        se verificarán al enviar.
+                        No se pudo conectar con el servidor. 
+                        Estás viendo el último menú consultado; sus precios y disponibilidad pueden haber cambiado.
                     </p>
                 `
                 : ''

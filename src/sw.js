@@ -1,9 +1,9 @@
-const VERSION = 'cafefe-ui-v7';
+const VERSION = 'cafefe-ui-v12';
 
 const ARCHIVOS = [
     'index.html',
     'manifest.webmanifest',
-    'icono.svg',
+    'resources/imagenes/icono.svg',
     'resources/estilos/tokens.css',
     'resources/estilos/estilos.js',
     'resources/imagenes/logo-cafefe.jpg',
@@ -13,6 +13,8 @@ const ARCHIVOS = [
     'js/base/Vista.js',
     'js/base/html.js',
     'js/componentes/cafe-app.js',
+    'js/componentes/cafe-tablero-recepcion.js',
+    'js/componentes/cafe-tarjeta-orden.js',
     'js/componentes/cafe-carrito.js',
     'js/componentes/cafe-catalogo.js',
     'js/componentes/cafe-detalle-orden.js',

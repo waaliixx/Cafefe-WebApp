@@ -10,7 +10,7 @@
     "theme_color": "#2a1a1f",
     "icons": [
         {
-            "src": "icono.svg",
+            "src": "resources/imagenes/icono.svg",
             "sizes": "any",
             "type": "image/svg+xml",
             "purpose": "any"
