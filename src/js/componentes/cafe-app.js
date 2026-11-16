@@ -41,8 +41,49 @@ export class CafeApp extends CafeElement {
             font-size: .85rem;
         }
 
+        .instalacion-superior {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: .65rem;
+            width: 100%;
+            padding: .65rem max(1rem, calc((100% - 1200px) / 2));
+            background: var(--cafe-crema, #f4ecdf);
+            border-bottom: 1px solid var(--color-borde, #d9c9b8);
+        }
+
+        .instalacion-superior[hidden],
+        #instalar[hidden],
+        #ayuda-instalacion[hidden] {
+            display: none !important;
+        }
+
         #instalar {
-            margin-top: .7rem;
+            min-height: 42px;
+            padding: .55rem 1rem;
+            border: 0;
+            border-radius: .55rem;
+            background: var(--cafe-grano, #2a1a1f);
+            color: var(--cafe-crema, #f4ecdf);
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        #instalar:focus-visible {
+            outline: 3px solid var(--cafe-caramelo, #c99d64);
+            outline-offset: 3px;
+        }
+
+        #instalar:disabled {
+            opacity: .6;
+            cursor: progress;
+        }
+
+        #ayuda-instalacion {
+            margin: 0;
+            font-size: .9rem;
         }
 
         @media (max-width: 520px) {
@@ -68,6 +109,13 @@ export class CafeApp extends CafeElement {
         return html`
             <cafe-encabezado></cafe-encabezado>
 
+            <div class="instalacion-superior" id="barra-instalacion" hidden>
+                <button id="instalar" type="button" hidden>
+                    Instalar aplicación
+                </button>
+                <p id="ayuda-instalacion" hidden role="status"></p>
+            </div>
+
             <main id="salida" tabindex="-1"></main>
 
             <footer>
@@ -75,10 +123,6 @@ export class CafeApp extends CafeElement {
 
                 <p id="conexion" role="status"></p>
 
-                <button id="instalar" type="button" hidden>
-                    Instalar aplicación
-                </button>
-                <p id="ayuda-instalacion" hidden role="status"></p>
             </footer>
         `;
     }
@@ -119,6 +163,7 @@ export class CafeApp extends CafeElement {
             evento.preventDefault();
             this.instalacion = evento;
             this.$('#instalar').hidden = false;
+            this.$('#barra-instalacion').hidden = false;
             this.$('#ayuda-instalacion').hidden = true;
         };
 
@@ -126,6 +171,7 @@ export class CafeApp extends CafeElement {
             this.instalacion = null;
             this.$('#instalar').hidden = true;
             this.$('#ayuda-instalacion').hidden = true;
+            this.$('#barra-instalacion').hidden = true;
         };
 
         const agente = navigator.userAgent || '';
@@ -135,6 +181,7 @@ export class CafeApp extends CafeElement {
             || navigator.standalone === true;
         if (this.esIOS && !instalada) {
             this.$('#instalar').hidden = false;
+            this.$('#barra-instalacion').hidden = false;
         }
 
         window.addEventListener(
