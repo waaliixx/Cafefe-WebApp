@@ -6,7 +6,7 @@ export class Carrito extends Vista {
     plantilla() {
         const {
             borrador = { cliente: '', items: [] },
-            ocupado,
+            ocupado
         } = this.estado;
 
         const total = borrador.items.reduce(
@@ -21,20 +21,25 @@ export class Carrito extends Vista {
 
                 <form>
                     <label>
-                        Tu nombre
+                        Ingresa tu nombre
+
                         <input
                             id="cliente"
                             maxlength="100"
                             required
                             value="${borrador.cliente}"
-                            ${deshabilitado(ocupado)}>
+                            ${deshabilitado(ocupado)}
+                        >
                     </label>
 
                     <ul>
                         ${borrador.items.map((item, indice) => html`
                             <li>
                                 <strong>${item.nombre}</strong>
-                                <p>${dinero(item.precio)} por unidad</p>
+
+                                <p>
+                                    ${dinero(item.precio)} por unidad
+                                </p>
 
                                 <div class="fila">
                                     <button
@@ -42,7 +47,8 @@ export class Carrito extends Vista {
                                         data-indice="${indice}"
                                         data-delta="-1"
                                         aria-label="Quitar una unidad de ${item.nombre}"
-                                        ${deshabilitado(ocupado)}>
+                                        ${deshabilitado(ocupado)}
+                                    >
                                         −
                                     </button>
 
@@ -55,13 +61,15 @@ export class Carrito extends Vista {
                                         aria-label="Agregar una unidad de ${item.nombre}"
                                         ${deshabilitado(
                                             ocupado || item.cantidad >= 20
-                                        )}>
+                                        )}
+                                    >
                                         +
                                     </button>
                                 </div>
 
                                 <label>
                                     Indicaciones
+
                                     <textarea
                                         data-nota="${indice}"
                                         maxlength="500"
@@ -74,7 +82,8 @@ export class Carrito extends Vista {
 
                     ${!borrador.items.length
                         ? html`<p>Tu pedido está vacío.</p>`
-                        : ''}
+                        : ''
+                    }
 
                     <p class="total">
                         Total estimado: ${dinero(total / 100)}
@@ -83,15 +92,10 @@ export class Carrito extends Vista {
                     <button
                         ${deshabilitado(
                             ocupado || !borrador.items.length
-                        )}>
+                        )}
+                    >
                         Confirmar pedido
                     </button>
-
-                    <p class="muted">
-                        El borrador se conserva en este navegador.
-                        El pedido solo queda registrado cuando
-                        el servidor lo confirma.
-                    </p>
                 </form>
             </aside>
         `;
@@ -99,7 +103,10 @@ export class Carrito extends Vista {
 
     despuesDeRenderizar() {
         this.escuchar('#cliente', 'input', evento => {
-            this.emitir('cafefe:cliente', evento.target.value);
+            this.emitir(
+                'cafefe:cliente',
+                evento.target.value
+            );
         });
 
         this.shadowRoot
@@ -114,7 +121,7 @@ export class Carrito extends Vista {
 
                     this.emitir('cafefe:cantidad', {
                         idProducto: item.idProducto,
-                        delta: Number(boton.dataset.delta),
+                        delta: Number(boton.dataset.delta)
                     });
                 };
             });
@@ -129,7 +136,7 @@ export class Carrito extends Vista {
 
                     this.emitir('cafefe:nota', {
                         idProducto: item.idProducto,
-                        observaciones: campo.value,
+                        observaciones: campo.value
                     });
                 };
             });

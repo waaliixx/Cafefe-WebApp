@@ -99,13 +99,6 @@ export class Login extends Vista {
             color: var(--cafe-grano);
         }
 
-        .ayuda {
-            margin: .5rem 0 0;
-            color: #6b584b;
-            font-size: .85rem;
-            line-height: 1.5;
-        }
-
         .acciones {
             display: flex;
             align-items: center;
@@ -216,7 +209,7 @@ export class Login extends Vista {
                         aria-busy="${this.ocupado}"
                     >
                         <label class="etiqueta" for="nombre">
-                            Usuario
+                            Nombre y apellido
                         </label>
 
                         <div class="campo">
@@ -236,7 +229,7 @@ export class Login extends Vista {
                                 name="nombre"
                                 type="text"
                                 autocomplete="username"
-                                placeholder="Tu nombre de empleado"
+                                placeholder="Nombre y apellido"
                                 value="${this.nombre}"
                                 required
                                 ${deshabilitado(this.ocupado)}
@@ -271,15 +264,10 @@ export class Login extends Vista {
                                 type="password"
                                 autocomplete="current-password"
                                 placeholder="Tu identificador de empleado"
-                                aria-describedby="ayuda-uid"
                                 required
                                 ${deshabilitado(this.ocupado)}
                             >
                         </div>
-
-                        <p id="ayuda-uid" class="ayuda">
-                            Tu contraseña es el identificador único de empleado.
-                        </p>
 
                         <div class="acciones">
                             <label class="recordar" for="recordar">

@@ -6,6 +6,20 @@ import './cafe-tarjeta-categoria.js';
 import './cafe-lista-productos.js';
 
 export class Catalogo extends Vista {
+    static estilos = Vista.estilos + `
+        .acciones-busqueda {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        #actualizar {
+            margin-left: auto;
+        }
+    `;
+
     filtradas() {
         return (this.estado.categorias || []).filter(categoria =>
             normalizar(categoria.nombre).includes(
@@ -20,32 +34,38 @@ export class Catalogo extends Vista {
         return html`
             <section>
                 <form class="panel">
-                    <label>
-                        Buscar categoría
-                        <input
-                            id="busqueda"
-                            type="search"
-                            value="${busqueda}"
-                            ${deshabilitado(ocupado)}>
-                    </label>
+                    <input
+                        id="busqueda"
+                        type="search"
+                        aria-label="Buscar categoría"
+                        value="${busqueda}"
+                        ${deshabilitado(ocupado)}
+                    >
 
-                    <button ${deshabilitado(ocupado)}>
-                        Buscar
-                    </button>
+                    <div class="acciones-busqueda">
+                        <button
+                            type="submit"
+                            ${deshabilitado(ocupado)}
+                        >
+                            Buscar categoría
+                        </button>
 
-                    <button
-                        id="actualizar"
-                        type="button"
-                        class="secundario"
-                        ${deshabilitado(ocupado)}>
-                        Actualizar menú
-                    </button>
+                        <button
+                            id="actualizar"
+                            type="button"
+                            class="secundario"
+                            ${deshabilitado(ocupado)}
+                        >
+                            Actualizar menú
+                        </button>
+                    </div>
                 </form>
 
                 <div class="grid">
                     ${this.filtradas().map((categoria, indice) => html`
                         <cafe-tarjeta-categoria
-                            data-indice="${indice}">
+                            data-indice="${indice}"
+                        >
                         </cafe-tarjeta-categoria>
                     `)}
                 </div>
@@ -58,7 +78,8 @@ export class Catalogo extends Vista {
                             el menú con conexión.
                         </p>
                     `
-                    : ''}
+                    : ''
+                }
 
                 <cafe-lista-productos></cafe-lista-productos>
             </section>
@@ -86,7 +107,7 @@ export class Catalogo extends Vista {
                 `[data-indice="${indice}"]`,
                 {
                     categoria,
-                    ocupado: this.estado.ocupado,
+                    ocupado: this.estado.ocupado
                 }
             );
         });
@@ -95,9 +116,6 @@ export class Catalogo extends Vista {
             'cafe-lista-productos',
             this.estado
         );
-
-        // Los eventos de los hijos atraviesan el Shadow DOM.
-        // No los reemitimos para evitar acciones duplicadas.
     }
 }
 

@@ -15,6 +15,26 @@ import '../componentes/cafe-catalogo.js';
 import '../componentes/cafe-carrito.js';
 
 export class Orden extends Vista {
+    static estilos = Vista.estilos + `
+        .titulo-orden {
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 0 0 1.5rem;
+        }
+
+        .columnas {
+            gap: 2.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 760px) {
+            .columnas {
+                gap: 2rem;
+            }
+        }
+    `;
+
     borrador = leer('borrador', {
         cliente: '',
         items: []
@@ -27,18 +47,44 @@ export class Orden extends Vista {
     copia = false;
     aviso = '';
     confirmacion = null;
+    actualizandoMenu = false;
 
     alConectar() {
         this.cargar();
     }
 
-    cargar() {
-        return this.ejecutar(async () => {
-            const respuesta = await consultarMenu('/tipo_producto');
+    async cargar(silencioso = false) {
+        if (this.ocupado) return;
 
-            this.categorias = respuesta.datos;
-            this.copia = respuesta.copia;
-        });
+        this.actualizandoMenu = silencioso;
+
+        try {
+            await this.ejecutar(async () => {
+                const respuesta = await consultarMenu('/tipo_producto');
+
+                this.categorias = respuesta.datos;
+                this.copia = respuesta.copia;
+            });
+        } finally {
+            this.actualizandoMenu = false;
+        }
+    }
+
+    mensajes() {
+        if (!this.actualizandoMenu) {
+            return super.mensajes();
+        }
+
+        return html`
+            ${this.error
+                ? html`
+                    <p class="error" role="alert">
+                        ${this.error}
+                    </p>
+                `
+                : ''
+            }
+        `;
     }
 
     guardar() {
@@ -99,11 +145,9 @@ export class Orden extends Vista {
 
     plantilla() {
         return html`
-            <h1>Un café a tu gusto</h1>
-
-            <p>
+            <h1 class="titulo-orden">
                 Selecciona tus productos y confirma tu pedido.
-            </p>
+            </h1>
 
             ${this.mensajes()}
 
@@ -136,7 +180,7 @@ export class Orden extends Vista {
                 : ''
             }
 
-            <div class="columnas">
+            <div class="columnas" aria-busy="${this.ocupado}">
                 <cafe-catalogo></cafe-catalogo>
                 <cafe-carrito></cafe-carrito>
             </div>
@@ -159,7 +203,7 @@ export class Orden extends Vista {
                     this.renderizar();
                 },
 
-                'cafefe:actualizar-menu': () => this.cargar(),
+                'cafefe:actualizar-menu': () => this.cargar(true),
 
                 'cafefe:categoria': id => {
                     const categoria = this.categorias.find(
