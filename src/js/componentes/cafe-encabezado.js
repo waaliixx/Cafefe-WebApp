@@ -2,6 +2,7 @@ import { Vista } from '../base/Vista.js';
 import { html } from '../base/html.js';
 import { permite } from '../control/reglas.js';
 
+//Encabezado actualizado
 export class Encabezado extends Vista {
     static estilos = Vista.estilos + `
         :host {
@@ -149,6 +150,18 @@ export class Encabezado extends Vista {
                                             href="#/recepcion"
                                         >
                                             Recepción
+                                        </a>
+                                    `
+                                    : ''
+                                }
+
+                                ${permite(usuario, ['cajero'])
+                                    ? html`
+                                        <a
+                                            class="boton-navegacion"
+                                            href="#/pago"
+                                        >
+                                            Caja
                                         </a>
                                     `
                                     : ''

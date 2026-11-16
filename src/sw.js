@@ -17,6 +17,8 @@ const ARCHIVOS = [
     'js/componentes/cafe-app.js',
     'js/componentes/cafe-tablero-recepcion.js',
     'js/componentes/cafe-tarjeta-orden.js',
+    'js/componentes/cafe-tablero-caja.js',
+    'js/componentes/cafe-tarjeta-cobro.js',
     'js/componentes/cafe-carrito.js',
     'js/componentes/cafe-catalogo.js',
     'js/componentes/cafe-detalle-orden.js',
