@@ -54,6 +54,7 @@ export class CafeApp extends CafeElement {
 
     _router = null;
     instalacion = null;
+    esIOS = false;
 
     get router() {
         return this._router || routerGlobal;
@@ -74,9 +75,10 @@ export class CafeApp extends CafeElement {
 
                 <p id="conexion" role="status"></p>
 
-                <button id="instalar" hidden>
+                <button id="instalar" type="button" hidden>
                     Instalar aplicación
                 </button>
+                <p id="ayuda-instalacion" hidden role="status"></p>
             </footer>
         `;
     }
@@ -117,12 +119,23 @@ export class CafeApp extends CafeElement {
             evento.preventDefault();
             this.instalacion = evento;
             this.$('#instalar').hidden = false;
+            this.$('#ayuda-instalacion').hidden = true;
         };
 
         this.yaInstalada = () => {
             this.instalacion = null;
             this.$('#instalar').hidden = true;
+            this.$('#ayuda-instalacion').hidden = true;
         };
+
+        const agente = navigator.userAgent || '';
+        this.esIOS = /iPad|iPhone|iPod/.test(agente)
+            || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const instalada = window.matchMedia('(display-mode: standalone)').matches
+            || navigator.standalone === true;
+        if (this.esIOS && !instalada) {
+            this.$('#instalar').hidden = false;
+        }
 
         window.addEventListener(
             'online',
@@ -147,22 +160,31 @@ export class CafeApp extends CafeElement {
         this.actualizarConexion();
 
         this.$('#instalar').onclick = async () => {
+            const boton = this.$('#instalar');
+            const ayuda = this.$('#ayuda-instalacion');
+            if (this.esIOS && !this.instalacion) {
+                ayuda.textContent = 'En Safari: tocá Compartir y elegí “Agregar a pantalla de inicio”.';
+                ayuda.hidden = false;
+                return;
+            }
+
             const evento = this.instalacion;
-
             if (!evento) return;
-
-            this.$('#instalar').disabled = true;
-
+            boton.disabled = true;
+            this.instalacion = null;
             try {
                 await evento.prompt();
-                await evento.userChoice;
+                const resultado = await evento.userChoice;
+                boton.hidden = true;
+                if (resultado.outcome !== 'accepted') {
+                    ayuda.textContent = 'También podés instalar Cafefe desde el menú de tu navegador.';
+                    ayuda.hidden = false;
+                }
             } catch {
-                this.$('#conexion').textContent =
-                    'No se pudo abrir la instalación. '
-                    + 'Use el menú del navegador.';
+                ayuda.textContent = 'Abrí el menú del navegador y seleccioná “Instalar aplicación”.';
+                ayuda.hidden = false;
             } finally {
-                this.yaInstalada();
-                this.$('#instalar').disabled = false;
+                boton.disabled = false;
             }
         };
     }

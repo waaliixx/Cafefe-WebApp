@@ -1,9 +1,11 @@
-const VERSION = 'cafefe-ui-v12';
+const VERSION = 'cafefe-ui-v13';
 
 const ARCHIVOS = [
     'index.html',
     'manifest.webmanifest',
     'resources/imagenes/icono.svg',
+    'resources/imagenes/icono-192.png',
+    'resources/imagenes/icono-512.png',
     'resources/estilos/tokens.css',
     'resources/estilos/estilos.js',
     'resources/imagenes/logo-cafefe.jpg',
@@ -60,30 +62,29 @@ self.addEventListener('activate', evento => {
 
 self.addEventListener('fetch', evento => {
     if (evento.request.method !== 'GET') return;
-
     const url = new URL(evento.request.url);
-    url.search = '';
-    url.hash = '';
+    // No interceptar consultas, cobros ni acciones del REST.
+    if (url.origin !== self.location.origin) return;
 
-    if (evento.request.mode === 'navigate'
-        && url.href === self.registration.scope) {
-        url.pathname += 'index.html';
+    // Las rutas son hash. Si no hay conexión, recuperar index.html.
+    if (evento.request.mode === 'navigate') {
+        evento.respondWith((async () => {
+            try {
+                return await fetch(evento.request);
+            } catch {
+                const cache = await caches.open(VERSION);
+                return (await cache.match(new URL('index.html', self.registration.scope).href))
+                    || new Response('Interfaz sin conexión', { status: 503 });
+            }
+        })());
+        return;
     }
 
+    url.search = '';
+    url.hash = '';
     if (!URLs.has(url.href)) return;
-
     evento.respondWith((async () => {
         const cache = await caches.open(VERSION);
-        const guardado = await cache.match(url.href);
-        if (guardado) return guardado;
-
-        try {
-            return await fetch(evento.request);
-        } catch {
-            return new Response('Recurso no disponible sin conexión.', {
-                status: 503,
-                headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-            });
-        }
+        return (await cache.match(url.href)) || fetch(evento.request);
     })());
 });
