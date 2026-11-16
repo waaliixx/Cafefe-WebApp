@@ -41,6 +41,18 @@ export class Pago extends Pendientes {
         });
     }
 
+    elegir(id) {
+        return this.ejecutar(async () => {
+            this.seleccion = null;
+            const orden = await api.get(`/orden/pendiente/${encodeURIComponent(id)}`);
+            if (!orden.productos?.length) {
+                throw new Error('Esta orden ya no tiene productos pendientes de pago.');
+            }
+            this.seleccion = orden;
+            this.alSeleccionar();
+        });
+    }
+
     alSeleccionar() {
         this.pagos = [];
         this.cliente = this.seleccion.cliente || '';

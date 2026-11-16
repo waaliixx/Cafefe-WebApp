@@ -11,7 +11,7 @@ export class ListaOrdenes extends Vista {
             <section class="panel ordenes">
                 <div class="fila encabezado-ordenes">
                     <div><p class="eyebrow">CAFEFE · PANEL OPERATIVO</p><h1>${titulo}</h1>
-                        <p class="muted">${ordenes.length} ${ordenes.length === 1 ? 'orden pendiente' : 'órdenes pendientes'} de pago</p></div>
+                        <p class="muted">${ordenes.length} ${ordenes.length === 1 ? 'orden pendiente' : 'órdenes pendientes'} ${titulo === 'Caja y pagos' ? 'de pago' : 'en cocina'}</p></div>
                     <button id="actualizar" class="secundario" ${deshabilitado(ocupado)}>↻ Actualizar</button>
                 </div>
                 <div class="grid ordenes-grid">
@@ -19,7 +19,7 @@ export class ListaOrdenes extends Vista {
                         <button class="tarjeta-orden ${seleccionado === orden.idOrden ? 'elegida' : ''}"
                             data-indice="${indice}" aria-pressed="${seleccionado === orden.idOrden}"
                             ${deshabilitado(ocupado)}>
-                            <span class="fila"><strong>Pedido #${String(orden.idOrden).slice(0, 8)}</strong><span class="estado-etiqueta">Pendiente</span></span>
+                            <span class="fila"><strong>Pedido #${String(orden.idOrden).slice(0, 8)}</strong><span class="estado-etiqueta">${orden.estadoPreparacion || 'Pendiente'}</span></span>
                             <span class="cliente-orden">${orden.cliente || 'Cliente del local'}</span>
                             <span class="muted">${orden.fechaCreacion ? new Date(orden.fechaCreacion).toLocaleString('es-SV') : 'Sin fecha registrada'}</span>
                             <span class="fila"><strong class="precio-orden">${dinero(orden.total)}</strong><small>${(orden.productos || []).length} productos</small></span>
