@@ -1,66 +1,221 @@
 import { CafeElement } from '../base/CafeElement.js';
 import { html } from '../base/html.js';
-import { router as routerGlobal } from '../servicios.js';
+import { estilos } from '../estilos.js';
+import {
+    router as routerGlobal,
+    sesion,
+    iniciarSesion,
+} from '../servicios.js';
+import { permite } from '../reglas.js';
 
-/** Contenedor principal: cabecera, zona donde se muestra la pantalla activa y pie. */
 export class CafeApp extends CafeElement {
-    static estilos = `
-        :host { display: flex; flex-direction: column; min-height: 100vh; }
+    static estilos = estilos + `
+        :host {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
         header {
-            display: flex; align-items: center; gap: var(--espacio-3);
-            padding: var(--espacio-3) var(--espacio-4);
-            background: var(--cafe-grano); color: var(--cafe-crema);
+            padding: 1rem 1.5rem;
+            background: var(--cafe-grano);
+            color: white;
         }
+
+        header a { color: var(--cafe-crema); }
+
         .marca {
-            color: var(--cafe-caramelo); font-weight: 700; font-size: 1.5rem;
-            letter-spacing: 0.08em; text-decoration: none;
+            font-weight: 800;
+            letter-spacing: .12em;
         }
-        main { flex: 1; padding: var(--espacio-4); outline: none; }
+
+        nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        main {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 1.5rem;
+            flex: 1;
+        }
+
         footer {
-            padding: var(--espacio-3); text-align: center; font-size: 0.85rem;
-            background: var(--cafe-crema); border-top: 1px solid var(--color-borde);
-        }
-        @media (max-width: 600px) {
-            header { padding: var(--espacio-2) var(--espacio-3); }
-            main { padding: var(--espacio-3); }
+            padding: 1rem;
+            text-align: center;
+            border-top: 1px solid var(--color-borde);
         }
     `;
 
-    #router = null;
+    _router = null;
+    instalacion = null;
 
     get router() {
-        return this.#router ?? routerGlobal;
+        return this._router || routerGlobal;
     }
 
     set router(valor) {
-        this.#router = valor;
+        this._router = valor;
     }
 
     plantilla() {
         return html`
             <header>
-                <a class="marca" href="#/" aria-label="Cafefe, ir al inicio">CAFEFE</a>
+                <a class="marca" href="#/orden">CAFEFE</a>
+
+                <nav aria-label="Navegación principal"></nav>
+
+                <p id="conexion" role="status"></p>
+
+                <button id="instalar" hidden>
+                    Instalar aplicación
+                </button>
             </header>
+
             <main id="salida" tabindex="-1"></main>
+
             <footer>Cafefe · PPI115 2026</footer>
         `;
     }
 
     alConectar() {
-        this.suscribirse(this.router, (detalle) => this.#mostrar(detalle));
-        if (this.router.actual) this.#mostrar(this.router.actual);
+        this.suscribirse(
+            this.router,
+            detalle => this.mostrar(detalle)
+        );
+
+        this.suscribirse(sesion, () => this.menu());
+
+        this.menu();
+
+        if (this.router.actual) {
+            this.mostrar(this.router.actual);
+        }
+
+        this.actualizarConexion = () => {
+            this.$('#conexion').textContent = navigator.onLine
+                ? 'Con conexión a la red'
+                : 'Sin conexión · puede consultar el menú guardado '
+                    + 'y preparar su pedido';
+        };
+
+        this.antesDeInstalar = evento => {
+            evento.preventDefault();
+            this.instalacion = evento;
+            this.$('#instalar').hidden = false;
+        };
+
+        this.yaInstalada = () => {
+            this.instalacion = null;
+            this.$('#instalar').hidden = true;
+        };
+
+        window.addEventListener('online', this.actualizarConexion);
+        window.addEventListener('offline', this.actualizarConexion);
+
+        window.addEventListener(
+            'beforeinstallprompt',
+            this.antesDeInstalar
+        );
+
+        window.addEventListener(
+            'appinstalled',
+            this.yaInstalada
+        );
+
+        this.actualizarConexion();
+
+        this.$('#instalar').onclick = async () => {
+            const evento = this.instalacion;
+
+            if (!evento) return;
+
+            this.$('#instalar').disabled = true;
+
+            try {
+                await evento.prompt();
+                await evento.userChoice;
+            } catch {
+                this.$('#conexion').textContent =
+                    'No se pudo abrir la instalación. '
+                    + 'Use el menú del navegador.';
+            } finally {
+                this.yaInstalada();
+                this.$('#instalar').disabled = false;
+            }
+        };
     }
 
-    #mostrar(detalle) {
-        const salida = this.$('#salida');
-        if (!salida) return;
-        const etiqueta = detalle.tipo === 'ruta' ? detalle.ruta.componente : 'cafe-pantalla-no-encontrada';
+    alDesconectar() {
+        window.removeEventListener(
+            'online',
+            this.actualizarConexion
+        );
+
+        window.removeEventListener(
+            'offline',
+            this.actualizarConexion
+        );
+
+        window.removeEventListener(
+            'beforeinstallprompt',
+            this.antesDeInstalar
+        );
+
+        window.removeEventListener(
+            'appinstalled',
+            this.yaInstalada
+        );
+    }
+
+    menu() {
+        const usuario = sesion.get('usuario');
+
+        this.$('nav').innerHTML = String(html`
+            <a href="#/orden">Ordenar</a>
+
+            ${permite(usuario, ['barista', 'cocinero'])
+                ? html`<a href="#/recepcion">Recepción</a>`
+                : ''}
+
+            ${permite(usuario, ['cajero'])
+                ? html`<a href="#/pago">Caja</a>`
+                : ''}
+
+            ${usuario
+                ? html`
+                    <span>${usuario.empleado.nombre}</span>
+                    <button id="salir">Salir</button>
+                `
+                : html`<a href="#/login">Empleados</a>`}
+        `);
+
+        this.$('#salir')?.addEventListener('click', () => {
+            iniciarSesion(null);
+            this.router.navegar('/login');
+        });
+    }
+
+    mostrar(detalle) {
+        const etiqueta = detalle.tipo === 'ruta'
+            ? detalle.ruta.componente
+            : 'cafe-pantalla-no-encontrada';
+
         const pantalla = document.createElement(etiqueta);
-        pantalla.params = detalle.params ?? {};
-        salida.replaceChildren(pantalla);
-        document.title = `${detalle.ruta?.titulo ?? 'Cafefe'} · Cafefe`;
-        salida.focus();
+        pantalla.params = detalle.params || {};
+
+        this.$('#salida').replaceChildren(pantalla);
+
+        document.title =
+            `${detalle.ruta?.titulo || 'Cafefe'} · Cafefe`;
+
+        this.$('#salida').focus();
     }
 }
 
-if (!customElements.get('cafe-app')) customElements.define('cafe-app', CafeApp);
+customElements.define('cafe-app', CafeApp);
