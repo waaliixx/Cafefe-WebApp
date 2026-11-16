@@ -1,6 +1,6 @@
-import { CafeElement } from '../../src/js/base/CafeElement.js';
-import { Store } from '../../src/js/base/Store.js';
-import { html } from '../../src/js/base/html.js';
+import { CafeElement } from '../../../src/js/base/CafeElement.js';
+import { Store } from '../../../src/js/base/Store.js';
+import { html } from '../../../src/js/base/html.js';
 
 class PruebaSaludo extends CafeElement {
     static estilos = 'p { color: red; }';

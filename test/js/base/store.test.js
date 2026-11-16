@@ -1,4 +1,4 @@
-import { Store } from '../../src/js/base/Store.js';
+import { Store } from '../../../src/js/base/Store.js';
 
 describe('Store (estado reactivo)', () => {
     it('guarda el estado inicial', () => {

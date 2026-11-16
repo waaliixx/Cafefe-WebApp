@@ -1,6 +1,6 @@
-import '../../src/js/componentes/cafe-app.js';
-import { CafeElement } from '../../src/js/base/CafeElement.js';
-import { html } from '../../src/js/base/html.js';
+import '../../../src/js/componentes/cafe-app.js';
+import { CafeElement } from '../../../src/js/base/CafeElement.js';
+import { html } from '../../../src/js/base/html.js';
 
 class PruebaPantalla extends CafeElement {
     plantilla() {
@@ -45,7 +45,7 @@ describe('cafe-app (contenedor de la SPA)', () => {
     afterEach(() => caja.remove());
 
     it('dibuja cabecera, zona de contenido y pie', () => {
-        expect(app.shadowRoot.querySelector('header')).to.not.equal(null);
+        expect(app.shadowRoot.querySelector('cafe-encabezado').shadowRoot.querySelector('header')).to.not.equal(null);
         expect(app.shadowRoot.querySelector('main')).to.not.equal(null);
         expect(app.shadowRoot.querySelector('footer')).to.not.equal(null);
     });

@@ -1,4 +1,4 @@
-import { escapar, html, crudo } from '../../src/js/base/html.js';
+import { escapar, html, crudo } from '../../../src/js/base/html.js';
 
 describe('html (plantillas seguras)', () => {
     it('escapa los caracteres peligrosos', () => {

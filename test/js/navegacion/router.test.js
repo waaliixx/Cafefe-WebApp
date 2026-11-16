@@ -1,4 +1,4 @@
-import { Router } from '../../src/js/router.js';
+import { Router } from '../../../src/js/navegacion/router.js';
 
 const RUTAS = [
     { path: '/', componente: 'pantalla-inicio' },
