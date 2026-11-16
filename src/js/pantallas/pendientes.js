@@ -14,12 +14,19 @@ export class Pendientes extends Vista {
 
     alConectar() {
         this.cargar();
+        this.actualizarAlRegresar = () => this.cargar();
+        window.addEventListener('focus', this.actualizarAlRegresar);
+    }
+
+    alDesconectar() {
+        window.removeEventListener('focus', this.actualizarAlRegresar);
     }
 
     cargar() {
         return this.ejecutar(async () => {
             this.ordenes = await api.get('/orden/pendiente');
             this.cargado = true;
+            this.ordenes = await api.get('/orden/preparacion');
             this.seleccion = null;
         });
     }
@@ -29,18 +36,39 @@ export class Pendientes extends Vista {
             this.seleccion = null;
 
             const orden = await api.get(
-                `/orden/pendiente/${encodeURIComponent(id)}`
+                `/orden/${encodeURIComponent(id)}/preparacion`
             );
 
             if (!orden.productos.length) {
                 throw new Error(
-                    'La orden ya no tiene productos pendientes. ' +
+                    'La orden ya no tiene productos. ' +
                     'Actualice el listado.'
                 );
             }
 
             this.seleccion = orden;
             this.alSeleccionar();
+        });
+    }
+
+    cambiarEstado({ idOrdenProducto, estado }) {
+        if (!this.seleccion || !idOrdenProducto) return;
+        return this.ejecutar(async () => {
+            const id = this.seleccion.idOrden;
+            this.seleccion = await api.put(
+                `/orden/${encodeURIComponent(id)}/producto/${encodeURIComponent(idOrdenProducto)}/preparacion`,
+                { estado }
+            );
+            this.ordenes = await api.get('/orden/preparacion');
+        });
+    }
+
+    despachar() {
+        if (!this.seleccion) return;
+        return this.ejecutar(async () => {
+            await api.put(`/orden/${encodeURIComponent(this.seleccion.idOrden)}/despacho`);
+            this.ordenes = await api.get('/orden/preparacion');
+            this.seleccion = null;
         });
     }
 
@@ -94,7 +122,8 @@ export class Pendientes extends Vista {
             {
                 ordenes: this.ordenes,
                 titulo: this.titulo,
-                ocupado: this.ocupado
+                ocupado: this.ocupado,
+                seleccionado: this.seleccion?.idOrden ?? null
             },
             {
                 'cafefe:actualizar-ordenes': () => this.cargar(),
@@ -105,7 +134,12 @@ export class Pendientes extends Vista {
         this.configurarHijo(
             'cafe-detalle-orden',
             {
-                orden: this.seleccion
+                orden: this.seleccion,
+                ocupado: this.ocupado,
+                cocina: this.titulo === 'Recepción de órdenes'
+            }, {
+                'cafefe:cambiar-estado': dato => this.cambiarEstado(dato),
+                'cafefe:despachar-orden': () => this.despachar()
             }
         );
     }

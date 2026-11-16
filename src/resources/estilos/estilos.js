@@ -143,3 +143,27 @@ export const estilos = `
         }
     }
 `;
+// Estilos de HU3 y HU4, definidos por la aplicación (sin dependencias externas).
+export const estilosOperativos = `
+    .eyebrow { color: #a45838; font-size: .72rem; font-weight: 800; letter-spacing: .13em; margin: 0 0 .45rem; }
+    .encabezado-ordenes { justify-content: space-between; align-items: flex-start; }
+    .encabezado-ordenes h1 { margin: 0; }
+    .encabezado-ordenes p { margin-bottom: 0; }
+    .ordenes-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); margin-top: 1.25rem; }
+    .tarjeta-orden { display: grid; gap: .7rem; text-align: left; background: #fffaf6; color: var(--cafe-grano); border: 1px solid #e9d9cc; border-radius: .8rem; box-shadow: 0 5px 20px #4c28130a; }
+    .tarjeta-orden:hover, .tarjeta-orden.elegida { border-color: #a54c2e; box-shadow: 0 0 0 2px #a54c2e22; }
+    .tarjeta-orden .fila { justify-content: space-between; }
+    .estado-etiqueta { color: #874b13; background: #fff0d1; padding: .25rem .5rem; border-radius: 2rem; font-size: .72rem; }
+    .cliente-orden { font-size: 1.15rem; font-weight: 700; }
+    .precio-orden { font-size: 1.3rem; }
+    .ver-detalle { color: #a34b2b; font-weight: 700; }
+    .producto-detalle { display: grid; grid-template-columns: 2rem 1fr auto; align-items: center; gap: .6rem; }
+    .numero-producto { display: grid; place-items: center; background: #f4e7db; border-radius: .5rem; width: 2rem; height: 2rem; }
+    .detalle-orden .total { justify-content: space-between; border-top: 2px solid #eadbd0; padding-top: 1rem; }
+    .detalle-vacio { border-style: dashed; }
+    .pago-resumen { padding: 1rem; background: #fcf6ee; border-radius: .75rem; }
+    .pago-resumen .fila { justify-content: space-between; }
+    .pago-resumen strong { font-size: 1.2rem; }
+    .comprobante { border-left: 4px solid #34815e; }
+    @media (max-width: 520px) { .encabezado-ordenes { align-items: stretch; } .encabezado-ordenes button { width: 100%; } }
+`;

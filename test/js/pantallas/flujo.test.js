@@ -304,6 +304,32 @@ describe('Pantallas conectadas al contrato del API', () => {
         expect(pantalla.error).to.include('pendientes');
     });
 
+    it('marca visualmente la orden seleccionada en recepción', async () => {
+        await montar('cafe-pantalla-pendientes');
+        await pantalla.elegir('orden-1');
+        const lista = pantalla.$('cafe-lista-ordenes');
+        expect(lista.shadowRoot.querySelector('[aria-pressed="true"]')).not.to.equal(null);
+        expect(lista.shadowRoot.textContent).to.include('Luis');
+    });
+
+    it('completa el importe restante en la pantalla de caja', async () => {
+        await montar('cafe-pantalla-pago');
+        await pantalla.elegir('orden-1');
+        pantalla.pagos = [{ tipoPago: 'Tarjeta', monto: '2.00' }];
+        pantalla.renderizar();
+        const formulario = pantalla.$('cafe-formulario-pago');
+        formulario.shadowRoot.querySelector('#completar').click();
+        expect(formulario.shadowRoot.querySelector('#monto').value).to.equal('5.00');
+    });
+
+    it('bloquea confirmar sin caja seleccionada', async () => {
+        await montar('cafe-pantalla-pago');
+        await pantalla.elegir('orden-1');
+        pantalla.pagos = [{ tipoPago: 'Efectivo', monto: '7.00' }];
+        pantalla.renderizar();
+        expect(pantalla.$('cafe-formulario-pago').shadowRoot.querySelector('#cobrar').disabled).to.equal(true);
+    });
+
     it('conserva la selección si se rechaza el cobro', async () => {
         post.rejects(new Error('Caja inactiva.'));
 
